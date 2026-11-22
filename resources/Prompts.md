@@ -15,8 +15,6 @@ Tool:
 <paste the prompt here>
 ```
 
-Result / notes: <what it produced, link or Jira keys>
-
 ---
 
 ## Stage 1 — Requirements analysis
@@ -37,8 +35,6 @@ user interactions on this page. Also list any validations you would
 expect a well-built version of this app to have.
 ```
 
-Result / notes:
-
 ### Prompt 2
 
 ```text
@@ -56,8 +52,6 @@ Exit criteria must be specific — all High tests executed, zero Priority 1 bugs
 open, max two Priority 2 bugs open with developer acknowledgement.
 ```
 
-Result / notes:
-
 ### Prompt 3
 
 ```text
@@ -69,8 +63,6 @@ First: total ignores the number of nights — may block booking tests until reso
 Second: no staging, all tests run on local file.
 Third: booking state not persisted across sessions.
 ```
-
-Result / notes:
 
 ---
 
@@ -93,8 +85,6 @@ List every scenario where the application should work correctly when used as int
 Present as a numbered list grouped by feature — scenario titles only, no steps yet.
 ```
 
-Result / notes:
-
 ### Prompt 2
 
 ```text
@@ -105,8 +95,6 @@ Turn scenarios from each section into full test cases.
 Format each as: TC ID, Title, Preconditions, Steps numbered one per line,
 Expected Result, Priority. Group by feature.
 ```
-
-Result / notes:
 
 ---
 
@@ -127,8 +115,6 @@ Each task: summary, preconditions, numbered steps, expected result,
 label by feature name, priority High.
 Assign to the current sprint.
 ```
-
-Result / notes:
 
 ---
 
@@ -163,8 +149,6 @@ EXPLORE (once the Playwright MCP is running):
 5. Report each finding as a short title and one-sentence description.
 ```
 
-Result / notes:
-
 ---
 
 ## Stage 5 — Linking bugs to test tasks in Jira
@@ -189,8 +173,6 @@ and
 https://web-ai-testing.atlassian.net/browse/BOOK-53
 ```
 
-Result / notes:
-
 ---
 
 ## Stage 6 — Bug fixing and PR (Copilot)
@@ -210,8 +192,6 @@ Apply the fixes in a new branch and create a PR when done.
 Change Jira statuses of each bug to 'In progress'/'W toku' after that.
 ```
 
-Result / notes:
-
 ---
 
 ## Stage 7 — Test execution and bug reporting
@@ -230,8 +210,6 @@ Go to project BOOK in Jira for the list of bugs that were fixed for BookNow app.
 For each bug, write a three-step verification procedure.
 ```
 
-Result / notes:
-
 ### Prompt 2
 
 ```text
@@ -242,8 +220,6 @@ What other areas of the app should I regression test to make sure the fixes
 did not introduce new problems?
 ```
 
-Result / notes:
-
 ### Prompt 3
 
 ```text
@@ -253,8 +229,6 @@ Tool: Claude
 From this regression list, which 5 areas are highest risk given the implemented fixes?
 Explain your reasoning.
 ```
-
-Result / notes:
 
 ---
 
@@ -272,8 +246,6 @@ Tool: Antigravity
 
 Run testing session again and check if the bugs listed in Jira project BOOK are fixed. Create a concise session summary after.
 ```
-
-Result / notes:
 
 ---
 
@@ -298,5 +270,3 @@ execution summary with pass rate, defect summary by severity, outstanding risks
 from open bugs, and a go/no-go recommendation with rationale.
 Save the report as test-report-sprint-1.md in my project folder.
 ```
-
-Result / notes:
