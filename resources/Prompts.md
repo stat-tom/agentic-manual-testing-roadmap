@@ -205,7 +205,9 @@ Result / notes:
 Prompt 1 — Fix Jira bugs and open PR
 Tool: Copilot
 
-Fix the bugs created in Jira project BOOK one by one. Apply the fixes in a new branch and create a PR when done. Change Jira statuses of each bug to 'In progress'/'W toku' after that.
+Fix the bugs created in Jira project BOOK one by one. 
+Apply the fixes in a new branch and create a PR when done. 
+Change Jira statuses of each bug to 'In progress'/'W toku' after that.
 ```
 
 Result / notes:
@@ -221,23 +223,11 @@ Result / notes:
 ### Prompt 1
 
 ```text
-<paste prompt here>
-```
+Prompt 1 — Verification procedures for fixed bugs
+Tool: Claude
 
-Result / notes:
-
----
-
-## Stage 8 — Bug fixing (Copilot)
-
-**Goal:** fix the reported bugs in `app.js`, `index.html` and `style.css`.
-**Tool:** GitHub Copilot
-**Status:** to be added manually
-
-### Prompt 1
-
-```text
-<paste Copilot prompt here>
+Go to project BOOK in Jira for the list of bugs that were fixed for BookNow app.
+For each bug, write a three-step verification procedure.
 ```
 
 Result / notes:
@@ -245,29 +235,49 @@ Result / notes:
 ### Prompt 2
 
 ```text
-<paste Copilot prompt here>
+Prompt 2 — Regression areas after fixes
+Tool: Claude
+
+What other areas of the app should I regression test to make sure the fixes
+did not introduce new problems?
+```
+
+Result / notes:
+
+### Prompt 3
+
+```text
+Prompt 3 — Highest-risk regression areas
+Tool: Claude
+
+From this regression list, which 5 areas are highest risk given the implemented fixes?
+Explain your reasoning.
 ```
 
 Result / notes:
 
 ---
 
-## Stage 9 — Fix verification and retest
+## Stage 8 — Fix verification and retest
 
 **Goal:** verify each fix on the fixed build and close the related bugs and test cases.
-**Tool:** Claude
+**Tool:** Antigravity (optional support)
+**Note:** this stage is manual work; Antigravity can be used to support the retest session.
 
 ### Prompt 1
 
 ```text
-<paste prompt here>
+Prompt 1 — Retest session on fixed bugs
+Tool: Antigravity
+
+Run testing session again and check if the bugs listed in Jira project BOOK are fixed. Create a concise session summary after.
 ```
 
 Result / notes:
 
 ---
 
-## Stage 10 — Test reporting
+## Stage 9 — Test reporting
 
 **Goal:** summarise Sprint 1 results and give a Go / No-Go recommendation.
 **Tool:** Claude
@@ -276,7 +286,17 @@ Result / notes:
 ### Prompt 1
 
 ```text
-<paste prompt here>
+Prompt 1 — Sprint 1 test summary report
+Tool: Claude
+
+Read all issues in Jira project BOOK for BOOK Sprint 1.
+Count test case Tasks by label status — how many passed, failed, blocked, not executed.
+Count Bug issues by priority — Critical, High, Medium, Low.
+List which bugs are resolved and which are still open with their ticket numbers.
+Then generate a professional test summary report including: executive summary,
+execution summary with pass rate, defect summary by severity, outstanding risks
+from open bugs, and a go/no-go recommendation with rationale.
+Save the report as test-report-sprint-1.md in my project folder.
 ```
 
 Result / notes:
