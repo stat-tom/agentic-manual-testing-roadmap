@@ -30,7 +30,48 @@ Result / notes: <what it produced, link or Jira keys>
 ### Prompt 1
 
 ```text
-<paste prompt here>
+Prompt 1 — Describe app features and expected validations
+Tool: Claude
+Date/time: 2026-11-22 21:30
+
+Based on this HTML and JavaScript, describe all the features and
+user interactions on this page. Also list any validations you would
+expect a well-built version of this app to have.
+```
+
+Result / notes:
+
+### Prompt 2
+
+```text
+Prompt 2 — Sprint test plan
+Tool: Claude
+Date/time: 2026-11-22 21:32
+
+Based on the requirements document I attached, write a concise test plan
+for the current sprint.
+Features in scope: Login, Rooms, Booking, Confirmation, browser title tab.
+Out of scope: Real payment processing, live availability/inventory, user registration and password reset,
+  account/profile pages, email confirmations, multi-currency, and search/filtering.
+Tester: one QA, 3 days, Chrome on staging.
+Include: scope, approach, entry criteria, exit criteria, prioritisation, risks.
+Exit criteria must be specific — all High tests executed, zero Priority 1 bugs
+open, max two Priority 2 bugs open with developer acknowledgement.
+```
+
+Result / notes:
+
+### Prompt 3
+
+```text
+Prompt 3 — Rewrite risks section
+Tool: Claude
+Date/time: 2026-11-22 21:33
+
+Rewrite the risks section with three specific risks.
+First: total ignores the number of nights — may block booking tests until resolved.
+Second: no staging, all tests run on local file.
+Third: booking state not persisted across sessions.
 ```
 
 Result / notes:
@@ -46,7 +87,29 @@ Result / notes:
 ### Prompt 1
 
 ```text
-<paste prompt here>
+Prompt 1 — Positive test scenarios
+Tool: Claude
+Date/time: 2026-11-22 21:34
+
+You are a QA engineer testing BookNow, a room booking application.
+Based on the requirements and app code I have attached, generate all positive
+test scenarios for each of these features: Login, Rooms, Booking, Confirmation, browser title tab.
+List every scenario where the application should work correctly when used as intended.
+Present as a numbered list grouped by feature — scenario titles only, no steps yet.
+```
+
+Result / notes:
+
+### Prompt 2
+
+```text
+Prompt 2 — Full test cases from scenarios
+Tool: Claude
+Date/time: 2026-11-22 21:35
+
+Turn scenarios from each section into full test cases.
+Format each as: TC ID, Title, Preconditions, Steps numbered one per line,
+Expected Result, Priority. Group by feature.
 ```
 
 Result / notes:
@@ -62,7 +125,14 @@ Result / notes:
 ### Prompt 1
 
 ```text
-<paste prompt here>
+Prompt 3 — Jira tasks from scenarios
+Tool: Claude
+Date/time: 2026-11-22 21:36
+
+Turn scenarios from each section into Jira Tasks in project BOOK.
+Each task: summary, preconditions, numbered steps, expected result,
+label by feature name, priority High.
+Assign to the current sprint.
 ```
 
 Result / notes:
