@@ -37,21 +37,26 @@ This repository documents a repeatable, end-to-end manual-testing workflow in wh
 ## Workflow at a glance
 
 ```text
-Requirements ─► 1 Feature inventory ─► 2 Test plan ─► 3 Test cases (Jira)
-                                                              │
-Go/No-Go ◄─ 8 Test report ◄─ 7 Retest ◄─ 6 Verification ◄─ 5 Bug reports (Jira) ◄─ 4 Exploratory session
+Requirements ─► 1 Requirements analysis ─► 2 Test case design ─► 3 Test cases (Jira)
+                                                                        │
+                                                                        ▼
+                     6 Bug fixing and PR ◄─ 5 Bug reports and linking ◄─ 4 Exploratory session
+                              │
+                              ▼
+Go/No-Go ◄─ 9 Test report ◄─ 8 Fix verification and retest ◄─ 7 Verification and regression planning
 ```
 
 | # | Stage | Agent / tool | Input | Output |
 |---|-------|--------------|-------|--------|
-| 1 | Feature inventory | AI + source code | App HTML/JS | Full feature list with validations |
-| 2 | Test plan | Claude Desktop | Requirements doc | Scope, approach, criteria, risks (saved locally) |
-| 3 | Test cases in Jira | Claude web + Claude Desktop with Jira MCP | Test plan, feature list | Jira Tasks `TC-<AREA>-<nn>` |
+| 1 | Requirements analysis | Claude | Requirements doc, app HTML/JS | Feature list with validations, test plan (scope, approach, criteria, risks) |
+| 2 | Test case design | Claude | Spec, app code | Scenarios, then full test cases |
+| 3 | Test case creation in Jira | Claude with Jira MCP | Selected test cases | Jira Tasks `TC-<AREA>-<nn>` |
 | 4 | Exploratory session | Antigravity (Playwright MCP) | Running app, spec | Reviewed list of confirmed findings |
-| 5 | Bug reports in Jira | Cursor + Jira MCP | Confirmed findings, code | Jira Bugs with code references |
-| 6 | Verification | GitHub Copilot | Bugs, fixed code | Confirmed fixes, updated ticket statuses |
-| 7 | Retest session | Antigravity | List of fixed bugs | Retest results on the fixed build |
-| 8 | Test report | Claude Desktop + Jira MCP | Live Jira data | Test summary report, Go/No-Go |
+| 5 | Bug reports and linking in Jira | Cursor + Jira MCP, Claude | Confirmed findings, code | Jira Bugs with code references, linked to test Tasks |
+| 6 | Bug fixing and PR | GitHub Copilot | Jira Bugs | Fix branch, pull request, bugs set to In progress |
+| 7 | Verification and regression planning | Claude | Fixed bugs | Verification steps per bug, regression and highest-risk areas |
+| 8 | Fix verification and retest | Manual, Antigravity (optional) | Fixed bugs, verification steps | Confirmed fixes, retest results, updated ticket statuses |
+| 9 | Test report | Claude Desktop + Jira MCP | Live Jira data | Test summary report, Go/No-Go |
 
 ---
 
@@ -59,59 +64,66 @@ Go/No-Go ◄─ 8 Test report ◄─ 7 Retest ◄─ 6 Verification ◄─ 5 Bug
 
 Each stage lists its **goal**, **how to run it**, the **human checkpoint** and its **exit criteria**. Record the prompts you use in [resources/Prompts.md](resources/Prompts.md).
 
-### Stage 1 — Feature inventory
+### Stage 1 — Requirements analysis
 
-- **Goal:** understand what the app actually does before designing tests.
-- **How:** give the AI the app source (`index.html`, `app.js`, `style.css`) and the requirements; ask for a complete list of features, fields, validations, business rules (e.g. pricing/discount math) and edge cases.
-- **Human checkpoint:** compare the inventory with the spec; flag behaviours present in code but missing from the spec, and vice versa.
-- **Exit criteria:** an agreed feature list grouped by spec area (Login, Rooms, Booking, Confirmation, General).
+- **Goal:** understand the spec and what the app actually does, then define how testing will be done.
+- **How:** give Claude the requirements and the app source (`index.html`, `app.js`, `style.css`). First ask for a complete list of features, fields, validations, business rules (e.g. pricing/discount math) and edge cases. Then ask for a test plan: scope (in/out), approach, entry/exit criteria, risks, environments and deliverables. Save the plan locally (see `resources/BookNow Test Plan — Current Sprint.docx`).
+- **Human checkpoint:** compare the inventory with the spec and flag behaviours present in code but missing from the spec, and vice versa; confirm scope, risks and exit criteria match the sprint.
+- **Exit criteria:** an agreed feature list grouped by spec area (Login, Rooms, Booking, Confirmation, General) and an approved test plan stored in the repository.
 
-### Stage 2 — Test plan
+### Stage 2 — Test case design
 
-- **Goal:** define how testing will be done.
-- **How:** in Claude Desktop, provide the requirements document and ask for scope (in/out), test approach, entry/exit criteria, risks, environments and deliverables. Save the result locally (see `resources/BookNow Test Plan — Current Sprint.docx`).
-- **Human checkpoint:** confirm scope and risks match the sprint; adjust criteria.
-- **Exit criteria:** approved test plan stored in the repository.
-
-### Stage 3 — Test cases in Jira
-
-- **Goal:** create reviewable, traceable test cases in the Jira project.
+- **Goal:** design reviewable, traceable test cases from the spec.
 - **How (two-step):**
-  1. **Scenarios first** — ask Claude (web) for a list of positive, negative and edge scenarios per spec area.
-  2. **Select and create** — review and pick scenarios, then use Claude Desktop with the Jira MCP server to create them as Jira **Tasks**.
-- **Naming:** `TC-<AREA>-<nn>` (e.g. `TC-LOG-06`), labelled by feature area.
+  1. **Scenarios first** — ask Claude for a list of scenarios per spec area, titles only. Request positive, negative and edge scenarios; Sprint 1 started with positive ones only, which left a negative-path gap (see risk R2 in the [report](resources/test-report-sprint-1.md)).
+  2. **Full test cases** — turn the selected scenarios into test cases with ID, title, preconditions, numbered steps, expected result and priority.
 - **Human checkpoint:** remove duplicates and low-value scenarios before anything is written to Jira.
+- **Exit criteria:** an agreed set of test cases grouped by feature area.
+
+### Stage 3 — Test case creation in Jira
+
+- **Goal:** put the designed test cases into the Jira project.
+- **How:** use Claude with the Jira MCP server to create the test cases as Jira **Tasks** in the current sprint, with preconditions, steps, expected result, a feature-area label and priority.
+- **Naming:** `TC-<AREA>-<nn>` (e.g. `TC-LOG-06`), labelled by feature area.
+- **Human checkpoint:** check the created Tasks against the approved set.
 - **Exit criteria:** all selected test cases exist in Jira (BOOK-1 … BOOK-52 in Sprint 1).
 
 ### Stage 4 — Exploratory session
 
 - **Goal:** let an autonomous agent explore the app against the spec and surface defects.
-- **How:** run Antigravity with the Playwright MCP server against the app; it navigates, fills forms, inspects the DOM and records findings (see [resources/exploratory-findings.md](resources/exploratory-findings.md) for an example output format).
+- **How:** run Antigravity with the Playwright MCP server against the app; it navigates, fills forms, inspects the DOM and reports each finding as a short title and one-sentence description.
 - **Human checkpoint:** for every finding **confirm** it by reproducing it, **verify** it against the spec, and **filter out noise** (false positives, out-of-scope items).
 - **Exit criteria:** a curated list of confirmed findings with steps and expected vs. actual results.
 
-### Stage 5 — Bug reports in Jira
+### Stage 5 — Bug reports and linking in Jira
 
-- **Goal:** turn confirmed findings into developer-ready bugs.
-- **How:** in Cursor with the Jira MCP server, create **Bug** tickets that include reproduction steps, expected/actual behaviour, severity (as a `severity-*` label) and **references to the offending code** (file and line).
-- **Human checkpoint:** review severity and wording before tickets are created.
-- **Exit criteria:** every confirmed finding has a Jira Bug (BOOK-53 … BOOK-66 in Sprint 1).
+- **Goal:** turn confirmed findings into developer-ready bugs and keep them traceable to the test cases.
+- **How:** in Cursor with the Jira MCP server, create **Bug** tickets that include reproduction steps, expected/actual behaviour, severity (as a `severity-*` label) and **references to the offending code** (file and line). Then ask Claude to link each bug to its matching test Task as related work, and to ask you when a match is unclear.
+- **Human checkpoint:** review severity and wording before tickets are created; review the proposed links.
+- **Exit criteria:** every confirmed finding has a Jira Bug (BOOK-53 … BOOK-66 in Sprint 1), linked to the test case it relates to.
 
-### Stage 6 — Verification
+### Stage 6 — Bug fixing and PR
 
-- **Goal:** confirm fixes and keep Jira accurate.
-- **How:** use GitHub Copilot to review the fixes in code against each bug, then update the status of every related bug and test case.
-- **Human checkpoint:** a fix is only "verified" after you have seen it behave correctly.
-- **Exit criteria:** all bug and test-case statuses reflect reality.
+- **Goal:** fix the reported bugs and deliver the fixes for review.
+- **How:** use GitHub Copilot to fix the Jira bugs one by one on a new branch, open a pull request and set each bug to *In progress* (*W toku*).
+- **Human checkpoint:** review the PR; make sure each fix matches its bug.
+- **Exit criteria:** pull request opened and bug statuses updated.
 
-### Stage 7 — Retest session
+### Stage 7 — Verification and regression planning
+
+- **Goal:** prepare how the fixes will be verified and what could have regressed.
+- **How:** ask Claude to read the fixed bugs in Jira and write a short verification procedure for each, then to list other areas that need regression testing and which of them are highest risk given the implemented fixes.
+- **Human checkpoint:** challenge the reasoning behind the highest-risk areas.
+- **Exit criteria:** a verification procedure per fixed bug and a prioritised regression list.
+
+### Stage 8 — Fix verification and retest
 
 - **Goal:** prove the fixes work in the running app and did not introduce regressions.
-- **How:** start a new Antigravity session driven by the list of fixed bugs; it re-executes the failing scenarios on the fixed build.
-- **Human checkpoint:** review the retest output; reopen any bug that still reproduces.
-- **Exit criteria:** every fixed bug is retested and closed, or reopened with evidence.
+- **How:** verify each fix manually using the Stage 7 procedures. Optionally start a new Antigravity session driven by the list of fixed bugs; it re-checks them on the fixed build and writes a concise session summary. Then update the status of every related bug and test case.
+- **Human checkpoint:** a fix is only "verified" after you have seen it behave correctly; reopen any bug that still reproduces.
+- **Exit criteria:** every fixed bug is retested and closed, or reopened with evidence; all bug and test-case statuses reflect reality.
 
-### Stage 8 — Test report
+### Stage 9 — Test report
 
 - **Goal:** summarise results and give a release recommendation.
 - **How:** in Claude Desktop with the Jira MCP server, read the **live** Jira project and generate the report: executive summary, scope and method, execution summary by area, defect analysis, risks and a recommendation.
@@ -129,18 +141,15 @@ Each stage lists its **goal**, **how to run it**, the **human checkpoint** and i
 │   ├── app.js
 │   └── style.css
 ├── resources/
-│   ├── Roadmap.md                    # Task checklist for the 8 stages
+│   ├── Roadmap.md                    # Task checklist for the 9 stages
 │   ├── Prompts.md                    # Prompt log, grouped by stage
 │   ├── booknow-sprint-requirements.md# Specification used as the test basis
 │   ├── BookNow Test Plan — Current Sprint.docx
-│   ├── exploratory-findings.md       # Example exploratory session output
 │   └── test-report-sprint-1.md       # Sprint 1 test summary report
 ├── mcp_config.json                   # Local MCP server config (git-ignored)
 ├── LICENSE
 └── README.md
 ```
-
-> [resources/exploratory-findings.md](resources/exploratory-findings.md) is a sample from a different demo app (TechShop) and illustrates the expected findings format only.
 
 ---
 
@@ -149,10 +158,10 @@ Each stage lists its **goal**, **how to run it**, the **human checkpoint** and i
 | Tool | Purpose |
 |------|---------|
 | [Jira](https://web-ai-testing.atlassian.net/jira/software/projects/BOOK/summary) (project `BOOK`) | Test cases, bugs, statuses |
-| Claude (web / Desktop) | Analysis, test planning, test-case design, reporting |
-| Antigravity | Autonomous exploratory and retest sessions |
+| Claude (web / Desktop) | Analysis, test planning, test-case design, Jira creation and linking, verification planning, reporting |
+| Antigravity | Autonomous exploratory sessions and optional retest |
 | Cursor | Bug reporting with code references |
-| GitHub Copilot | Fix review and verification |
+| GitHub Copilot | Bug fixing and pull request |
 | [Playwright MCP](https://github.com/microsoft/playwright-mcp) | Browser automation for agents |
 | [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) | Jira access for agents |
 
@@ -199,13 +208,13 @@ Test credentials: `guest@booknow.com` / `stay2026`.
 1. **Prepare inputs** — a requirements document (with numbered sections, so tests can trace to them) and access to the app source or a running instance.
 2. **Create a Jira project** with a short key and a sprint; add an API token and fill in `mcp_config.json`.
 3. **Copy [resources/Roadmap.md](resources/Roadmap.md)** as your checklist and **[resources/Prompts.md](resources/Prompts.md)** as your prompt log; replace the project name, key and spec areas.
-4. **Run stages 1–8 in order**, applying the human checkpoint at each stage and logging prompts as you go.
+4. **Run stages 1–9 in order**, applying the human checkpoint at each stage and logging prompts as you go.
 5. **Keep the conventions** below so reports can be generated consistently from Jira.
 6. **Archive** the plan, findings and report under `resources/` for each sprint.
 
 Tips:
 
-- Keep scenario selection (stage 3) and finding triage (stage 4) manual — they are the best quality filters.
+- Keep scenario selection (stage 2) and finding triage (stage 4) manual — they are the best quality filters.
 - Ask the agent to state its assumptions in the report, and verify them.
 - Swap tools freely; the stages and their outputs matter more than the specific agent.
 
