@@ -1,8 +1,6 @@
 # Roadmap
 
-**Section 11 · Clip 2 — Your Task Checklist**
-
-Work through in order — same workflow as the course.
+Work through in order:
 
 - [x] **1. Requirements analysis** — Claude reads the spec + BookNow HTML/JS → feature list with validations, then a test plan (scope, approach, criteria, risks) → save locally
 - [x] **2. Test case design** — Claude · scenarios first → select → full test cases (steps, expected result, priority)
