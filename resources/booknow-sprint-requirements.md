@@ -1,8 +1,8 @@
-# BookNow — Capstone Requirements
+# BookNow — Requirements
 
 **Project:** BookNow — Hotel Room Booking (web app)
-**Used in:** the Capstone Project. This is the spec you verify the app against.
-**App:** `capstone/booknow-broken/` (buggy) and `capstone/booknow-fixed/` (clean).
+**Used in:** This is the spec you verify the app against.
+**App:** `booknow/booknow-broken/` (buggy).
 
 > This is your independent project. Explore the app, design test cases from this spec, and
 > report the bugs you find. The bug count is **not disclosed** here — finding them is the job.
@@ -65,9 +65,8 @@
   browser — no server needed. Data and auth are in-app/mocked.
 - Credentials hardcoded: guest@booknow.com / stay2026.
 
-## 4. Your Task (Capstone)
+## 4. Task
 1. Explore BookNow and compare it against this spec.
 2. Design test cases (positive, negative, edge) with your test-case-design skill.
 3. Execute them against the broken app; write professional bug reports for what you find.
 4. Verify each fix against the fixed app.
-5. **Only after you finish**, compare your findings to `resources/known-bugs-booknow.md`.
